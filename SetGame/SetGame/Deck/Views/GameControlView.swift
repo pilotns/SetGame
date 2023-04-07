@@ -14,41 +14,45 @@ struct GameControlView: View {
     
     var body: some View {
         HStack {
-            WithViewStore(self.store, observe: { $0 }) { deck in
-                ZStack {
+            ZStack {
+                WithViewStore(self.store, observe: \.discarded) { deck in
                     ForEachStore(self.store.scope(state: \.discarded, action: Deck.Action.card(id:action:))) { card in
                         WithViewStore(card.actionless, observe: \.id) { id in
                             CardView(store: card)
                                 .matchedGeometryEffect(id: id.state, in: namespace)
-                                .transition(.identity.animation(.easeInOut))
+                                .transition(.identity.animation(.default))
                                 .rotationEffect(
-                                    rotationAngle(of: id.state, in: deck.discarded),
+                                    rotationAngle(of: id.state, in: deck.state),
                                     anchor: .bottomTrailing
                                 )
                         }
                     }
+                    .animation(.default, value: deck.state)
                 }
-                
-                Spacer()
-                
-                ZStack {
+            }
+            
+            Spacer()
+            
+            ZStack {
+                WithViewStore(self.store, observe: \.undealt) { deck in
                     ForEachStore(self.store.scope(state: \.undealt, action: Deck.Action.card(id:action:))) { card in
                         WithViewStore(card.actionless, observe: \.id) { id in
-                            let index = index(of: id.state, in: deck.undealt)
+                            let index = index(of: id.state, in: deck.state)
                             
                             CardView(store: card)
                                 .matchedGeometryEffect(id: id.state, in: namespace)
-                                .transition(.identity.animation(.easeInOut))
+                                .transition(.identity.animation(.default))
                                 .rotationEffect(
-                                    rotationAngle(of: id.state, in: deck.undealt),
+                                    rotationAngle(of: id.state, in: deck.state),
                                     anchor: .bottomLeading)
                                 .zIndex(Double(-index))
-                                .animation(nil, value: UUID())
+                                .animation(nil, value: id.state)
                                 .onTapGesture {
-                                    deck.send(.deal)
+                                    deck.send(.deal, animation: .default)
                                 }
                         }
                     }
+                    .animation(.default, value: deck.state)
                 }
             }
         }
