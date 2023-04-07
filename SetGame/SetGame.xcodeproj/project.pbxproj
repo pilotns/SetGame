@@ -14,6 +14,7 @@
 		8A5ED05B29E0193C009AB497 /* SetGameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED05A29E0193C009AB497 /* SetGameTests.swift */; };
 		8A5ED06529E0193C009AB497 /* SetGameUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED06429E0193C009AB497 /* SetGameUITests.swift */; };
 		8A5ED06729E0193C009AB497 /* SetGameUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED06629E0193C009AB497 /* SetGameUITestsLaunchTests.swift */; };
+		8A5ED07529E01A71009AB497 /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED07429E01A71009AB497 /* Optional+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		8A5ED06029E0193C009AB497 /* SetGameUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SetGameUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A5ED06429E0193C009AB497 /* SetGameUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameUITests.swift; sourceTree = "<group>"; };
 		8A5ED06629E0193C009AB497 /* SetGameUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		8A5ED07429E01A71009AB497 /* Optional+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +96,7 @@
 		8A5ED04829E0193B009AB497 /* SetGame */ = {
 			isa = PBXGroup;
 			children = (
+				8A5ED07329E01A3A009AB497 /* Library */,
 				8A5ED04929E0193B009AB497 /* SetGameApp.swift */,
 				8A5ED04B29E0193B009AB497 /* ContentView.swift */,
 				8A5ED04D29E0193C009AB497 /* Assets.xcassets */,
@@ -125,6 +128,14 @@
 				8A5ED06629E0193C009AB497 /* SetGameUITestsLaunchTests.swift */,
 			);
 			path = SetGameUITests;
+			sourceTree = "<group>";
+		};
+		8A5ED07329E01A3A009AB497 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				8A5ED07429E01A71009AB497 /* Optional+Extensions.swift */,
+			);
+			path = Library;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -258,6 +269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A5ED04C29E0193B009AB497 /* ContentView.swift in Sources */,
+				8A5ED07529E01A71009AB497 /* Optional+Extensions.swift in Sources */,
 				8A5ED04A29E0193B009AB497 /* SetGameApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
