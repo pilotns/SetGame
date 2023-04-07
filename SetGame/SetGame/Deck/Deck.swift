@@ -19,7 +19,7 @@ struct Deck: Reducer {
         func deal() -> Effect<Action> {
             .run(priority: .userInitiated) { send in
                 for (index, card) in toDeal.enumerated() {
-                    await send(.card(id: card.id, action: .deal), animation: .easeInOut.delay(Double(index)))
+                    await send(.card(id: card.id, action: .deal), animation: .easeInOut.delay(Double(index) * 0.15))
                 }
             }
         }
