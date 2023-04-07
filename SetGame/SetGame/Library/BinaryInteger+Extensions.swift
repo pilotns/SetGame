@@ -2,7 +2,7 @@
 //  BinaryInteger+Extensions.swift
 //  SetGame
 //
-//  Created by pilotns on 16.03.2023.
+//  Created by pilotns on 07.04.2023.
 //
 
 import Foundation

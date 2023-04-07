@@ -6,12 +6,18 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 @main
 struct SetGameApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SetGameDeskView(
+                store: Store(
+                    initialState: Deck.State(),
+                    reducer: Deck()
+                )
+            )
         }
     }
 }
