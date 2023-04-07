@@ -11,11 +11,16 @@
 		8A5ED04C29E0193B009AB497 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED04B29E0193B009AB497 /* ContentView.swift */; };
 		8A5ED04E29E0193C009AB497 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A5ED04D29E0193C009AB497 /* Assets.xcassets */; };
 		8A5ED05129E0193C009AB497 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A5ED05029E0193C009AB497 /* Preview Assets.xcassets */; };
-		8A5ED05B29E0193C009AB497 /* SetGameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED05A29E0193C009AB497 /* SetGameTests.swift */; };
+		8A5ED05B29E0193C009AB497 /* DeckTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED05A29E0193C009AB497 /* DeckTests.swift */; };
 		8A5ED06529E0193C009AB497 /* SetGameUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED06429E0193C009AB497 /* SetGameUITests.swift */; };
 		8A5ED06729E0193C009AB497 /* SetGameUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED06629E0193C009AB497 /* SetGameUITestsLaunchTests.swift */; };
 		8A5ED07529E01A71009AB497 /* Optional+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED07429E01A71009AB497 /* Optional+Extensions.swift */; };
 		8A5ED07829E01B65009AB497 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 8A5ED07729E01B65009AB497 /* ComposableArchitecture */; };
+		8A5ED07B29E01C7B009AB497 /* Deck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED07A29E01C7B009AB497 /* Deck.swift */; };
+		8A5ED07D29E01D6F009AB497 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED07C29E01D6F009AB497 /* Card.swift */; };
+		8A5ED07F29E02299009AB497 /* Face.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED07E29E02299009AB497 /* Face.swift */; };
+		8A5ED08129E022FE009AB497 /* BinaryInteger+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED08029E022FE009AB497 /* BinaryInteger+Extensions.swift */; };
+		8A5ED08329E06418009AB497 /* CardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5ED08229E06418009AB497 /* CardTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,11 +47,16 @@
 		8A5ED04D29E0193C009AB497 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8A5ED05029E0193C009AB497 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8A5ED05629E0193C009AB497 /* SetGameTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SetGameTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A5ED05A29E0193C009AB497 /* SetGameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameTests.swift; sourceTree = "<group>"; };
+		8A5ED05A29E0193C009AB497 /* DeckTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckTests.swift; sourceTree = "<group>"; };
 		8A5ED06029E0193C009AB497 /* SetGameUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SetGameUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A5ED06429E0193C009AB497 /* SetGameUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameUITests.swift; sourceTree = "<group>"; };
 		8A5ED06629E0193C009AB497 /* SetGameUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGameUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		8A5ED07429E01A71009AB497 /* Optional+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extensions.swift"; sourceTree = "<group>"; };
+		8A5ED07A29E01C7B009AB497 /* Deck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deck.swift; sourceTree = "<group>"; };
+		8A5ED07C29E01D6F009AB497 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
+		8A5ED07E29E02299009AB497 /* Face.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Face.swift; sourceTree = "<group>"; };
+		8A5ED08029E022FE009AB497 /* BinaryInteger+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BinaryInteger+Extensions.swift"; sourceTree = "<group>"; };
+		8A5ED08229E06418009AB497 /* CardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +109,7 @@
 			isa = PBXGroup;
 			children = (
 				8A5ED07329E01A3A009AB497 /* Library */,
+				8A5ED07929E01C6B009AB497 /* Deck */,
 				8A5ED04929E0193B009AB497 /* SetGameApp.swift */,
 				8A5ED04B29E0193B009AB497 /* ContentView.swift */,
 				8A5ED04D29E0193C009AB497 /* Assets.xcassets */,
@@ -118,7 +129,8 @@
 		8A5ED05929E0193C009AB497 /* SetGameTests */ = {
 			isa = PBXGroup;
 			children = (
-				8A5ED05A29E0193C009AB497 /* SetGameTests.swift */,
+				8A5ED05A29E0193C009AB497 /* DeckTests.swift */,
+				8A5ED08229E06418009AB497 /* CardTests.swift */,
 			);
 			path = SetGameTests;
 			sourceTree = "<group>";
@@ -136,8 +148,19 @@
 			isa = PBXGroup;
 			children = (
 				8A5ED07429E01A71009AB497 /* Optional+Extensions.swift */,
+				8A5ED08029E022FE009AB497 /* BinaryInteger+Extensions.swift */,
 			);
 			path = Library;
+			sourceTree = "<group>";
+		};
+		8A5ED07929E01C6B009AB497 /* Deck */ = {
+			isa = PBXGroup;
+			children = (
+				8A5ED07A29E01C7B009AB497 /* Deck.swift */,
+				8A5ED07C29E01D6F009AB497 /* Card.swift */,
+				8A5ED07E29E02299009AB497 /* Face.swift */,
+			);
+			path = Deck;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -276,8 +299,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A5ED07B29E01C7B009AB497 /* Deck.swift in Sources */,
 				8A5ED04C29E0193B009AB497 /* ContentView.swift in Sources */,
+				8A5ED07D29E01D6F009AB497 /* Card.swift in Sources */,
 				8A5ED07529E01A71009AB497 /* Optional+Extensions.swift in Sources */,
+				8A5ED07F29E02299009AB497 /* Face.swift in Sources */,
+				8A5ED08129E022FE009AB497 /* BinaryInteger+Extensions.swift in Sources */,
 				8A5ED04A29E0193B009AB497 /* SetGameApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -286,7 +313,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A5ED05B29E0193C009AB497 /* SetGameTests.swift in Sources */,
+				8A5ED05B29E0193C009AB497 /* DeckTests.swift in Sources */,
+				8A5ED08329E06418009AB497 /* CardTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
