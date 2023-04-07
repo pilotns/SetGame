@@ -23,7 +23,7 @@ struct GameControlView: View {
                                 .transition(.identity.animation(.easeInOut))
                                 .rotationEffect(
                                     rotationAngle(of: id.state, in: deck.discarded),
-                                    anchor: .bottomLeading
+                                    anchor: .bottomTrailing
                                 )
                         }
                     }
@@ -73,7 +73,7 @@ struct GameControlView: View {
             case .discarded:
                 return index < slicedCards
                 ? .degrees(Double(index) * offset)
-                : .degrees(0)
+                : .degrees(Double(slicedCards) * offset)
                 
             default: return .degrees(0)
             }
