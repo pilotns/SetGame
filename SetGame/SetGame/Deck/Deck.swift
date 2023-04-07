@@ -17,21 +17,21 @@ struct Deck: Reducer {
         // MARK: -
         // MARK: Public
         func deal() -> Effect<Action> {
-            .concatenate(
-                toDeal.map {
-                    .send(.card(id: $0.id, action: .deal), animation: .easeInOut.delay(0.1))
+            .run(priority: .userInitiated) { send in
+                for (index, card) in toDeal.enumerated() {
+                    await send(.card(id: card.id, action: .deal), animation: .easeInOut.delay(Double(index)))
                 }
-            )
+            }
         }
         
         func discard() -> Effect<Action> {
-            .concatenate(
+            return .concatenate(
                 selected.map {
                     .send(.card(id: $0.id, action: .select))
                 }
                 +
                 selected.map {
-                    .send(.card(id: $0.id, action: .discard), animation: .easeInOut.delay(0.1))
+                    .send(.card(id: $0.id, action: .discard), animation: .easeInOut)
                 }
             )
         }
@@ -39,16 +39,18 @@ struct Deck: Reducer {
         func deselectSelected() -> Effect<Action> {
             .concatenate(
                 selected.map {
-                    .send(.card(id: $0.id, action: .select), animation: .easeInOut.delay(0.1))
+                    .send(.card(id: $0.id, action: .select), animation: .easeInOut)
                 }
             )
         }
         
         var isSet: Bool {
-            return Set(cards.map(\.face.symbol)).count.isOdd
-                || Set(cards.map(\.face.shading)).count.isOdd
-                || Set(cards.map(\.face.color)).count.isOdd
-                || Set(cards.map(\.face.number)).count.isOdd
+            let isSet = Set(selected.map(\.face.symbol)).count.isOdd
+                && Set(selected.map(\.face.shading)).count.isOdd
+                && Set(selected.map(\.face.color)).count.isOdd
+                && Set(selected.map(\.face.number)).count.isOdd
+            
+            return isSet
         }
         
         // MARK: -
