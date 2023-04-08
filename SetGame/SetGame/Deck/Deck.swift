@@ -17,9 +17,11 @@ struct Deck: Reducer {
         // MARK: -
         // MARK: Public
         func deal() -> Effect<Action> {
-            .run(priority: .userInitiated) { send in
+            @Dependency(\.continuousClock) var clock
+            return .run(priority: .high) { send in
                 for (index, card) in toDeal.enumerated() {
-                    await send(.card(id: card.id, action: .deal), animation: .easeInOut.delay(Double(index) * 0.15))
+                    try await clock.sleep(for: .milliseconds(100))
+                    await send(.card(id: card.id, action: .deal), animation: .default)
                 }
             }
         }

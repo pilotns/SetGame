@@ -16,19 +16,22 @@ struct SetGameDeskView: View {
     var body: some View {
         ZStack {
             ScrollView {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))]) {
-                    ForEachStore(self.store.scope(state: \.dealt, action: Deck.Action.card(id:action:))) { card in
-                        WithViewStore(card, observe: \.id) { id in
-                            CardView(store: card)
-                                .matchedGeometryEffect(id: id.state, in: dealing)
-                                .transition(.identity.animation(.easeInOut))
-                                .onTapGesture {
-                                    id.send(.select, animation: .easeInOut)
-                                }
+                WithViewStore(self.store, observe: \.dealt) { viewStore in
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))]) {
+                        ForEachStore(self.store.scope(state: \.dealt, action: Deck.Action.card(id:action:))) { card in
+                            WithViewStore(card, observe: \.id) { id in
+                                CardView(store: card)
+                                    .matchedGeometryEffect(id: id.state, in: dealing)
+                                    .transition(.identity.animation(.default))
+                                    .onTapGesture {
+                                        id.send(.select, animation: .easeInOut)
+                                    }
+                            }
                         }
                     }
+                    .animation(.default, value: viewStore.state)
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
             }
         }
         .safeAreaInset(edge: .bottom) {
