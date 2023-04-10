@@ -47,12 +47,7 @@ struct Deck: Reducer {
         }
         
         var isSet: Bool {
-            let isSet = Set(selected.map(\.face.symbol)).count.isOdd
-                && Set(selected.map(\.face.shading)).count.isOdd
-                && Set(selected.map(\.face.color)).count.isOdd
-                && Set(selected.map(\.face.number)).count.isOdd
-            
-            return isSet
+            isSet(of: selected)
         }
         
         // MARK: -
@@ -67,11 +62,21 @@ struct Deck: Reducer {
             ? 12
             : min(3, undealt.count)
         }
+        
+        private func isSet(of cards: IdentifiedArrayOf<Card.State>) -> Bool {
+            let result = Set(cards.map(\.face.symbol)).count.isOdd
+                && Set(cards.map(\.face.shading)).count.isOdd
+                && Set(cards.map(\.face.color)).count.isOdd
+                && Set(cards.map(\.face.number)).count.isOdd
+            
+            return result
+        }
     }
     
     enum Action: Equatable {
         case deal
         case isSet
+        case showHint
         case card(id: Card.State.ID, action: Card.Action)
     }
     
@@ -85,6 +90,10 @@ struct Deck: Reducer {
                 return state.isSet
                 ? state.discard()
                 : state.deselectSelected()
+                
+            case .showHint:
+                
+                return .none
                 
             case let .card(id: _, action: action) where action == .select:
                 return state.selected.count == 3
@@ -108,8 +117,53 @@ extension Deck.State {
     static var cards: IdentifiedArrayOf<Card.State> {
         IdentifiedArrayOf(
             uniqueElements: Card.Face.allFaces
+//                .shuffled()
                 .map { Card.State(face: $0) }
         )
+    }
+}
+
+extension Deck.State {
+    func hints(quantity: HintQuantity) -> [IdentifiedArrayOf<Card.State>] {
+        return findHint(dealt, quantity: quantity)
+    }
+    
+    enum HintQuantity {
+        case all
+        case atLeast(_ quantity: UInt)
+    }
+    
+    private func findHint(_ cards: IdentifiedArrayOf<Card.State>, quantity: HintQuantity) -> [IdentifiedArrayOf<Card.State>] {
+        var hints = [IdentifiedArrayOf<Card.State>]()
+        let dropped = IdentifiedArray(uniqueElements: cards.dropFirst())
+        let count = cards.count
+        
+        if dropped.isEmpty {
+            return []
+        }
+        
+        for i in 0..<count {
+            for j in 1..<count {
+                if i < j && j < count - 1 {
+                    if case let .atLeast(q) = quantity, hints.count == q {
+                        return hints + []
+                    }
+                    
+                    let hint: IdentifiedArrayOf<Card.State> = [cards[0], dropped[i], dropped[j]]
+                    if isSet(of: hint) {
+                        hints.append(hint)
+                    }
+                } else {
+                    continue
+                }
+            }
+        }
+
+        if case let .atLeast(q) = quantity, q > 0 {
+            return hints + findHint(dropped, quantity: .atLeast(q - UInt(hints.count)))
+        }
+        
+        return hints + findHint(dropped, quantity: quantity)
     }
 }
 
