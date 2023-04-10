@@ -21,12 +21,11 @@ struct Card: Reducer {
         var isSelected = false
         let face: Face
         
-        init(
-            id: UUID? = nil,
-            state: State = .undealt,
-            isSelected: Bool = false,
-            face: Face
-        ) {
+        init(id: UUID? = nil,
+             state: State = .undealt,
+             isSelected: Bool = false,
+             face: Face)
+        {
             @Dependency(\.uuid) var uuid
             self.id = id ?? uuid()
             self.state = state

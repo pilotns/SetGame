@@ -30,7 +30,6 @@ struct StripedBackground: View {
             p.closeSubpath()
             
             context.stroke(p, with: .foreground)
-
         }
     }
 }

@@ -15,7 +15,7 @@ struct GameControlView: View {
     var body: some View {
         HStack {
             ZStack {
-                WithViewStore(self.store, observe: \.discarded) { deck in
+                WithViewStore(self.store.actionless, observe: \.discarded) { deck in
                     ForEachStore(self.store.scope(state: \.discarded, action: Deck.Action.card(id:action:))) { card in
                         WithViewStore(card.actionless, observe: \.id) { id in
                             CardView(store: card)

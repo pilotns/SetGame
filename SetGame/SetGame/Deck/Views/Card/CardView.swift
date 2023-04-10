@@ -14,7 +14,7 @@ struct CardView: View {
     let store: StoreOf<Card>
     
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { card in
+        WithViewStore(self.store.actionless, observe: { $0 }) { card in
             ZStack {
                 let shape = RoundedRectangle(cornerRadius: 5)
                 let strokedShape = shape.strokeBorder(lineWidth: card.isSelected ? 1 : 0.5)

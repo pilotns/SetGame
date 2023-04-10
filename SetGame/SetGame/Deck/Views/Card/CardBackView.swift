@@ -58,7 +58,7 @@ struct CardBackView: View {
                     strockedShape
                         .background(.white)
                     
-                    let fontSize = min(size.width, size.height) * 0.26
+                    let fontSize = min(size.width, size.height) * 0.25
                     Text(character)
                         .font(.system(size: fontSize, design: .serif))
                         .rotationEffect(.degrees(90))
