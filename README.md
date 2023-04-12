@@ -1,2 +1,2 @@
 # SetGame
-Implementation Set card game in SwiftUI using Composable Acrchitecture approach
+Implementation Set card game in SwiftUI using Composable Architecture approach
