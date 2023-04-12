@@ -13,13 +13,38 @@ struct Deck: Reducer {
         // MARK: -
         // MARK: Properties
         var cards: IdentifiedArrayOf<Card.State> = Self.cards
-        
+        var geometry = Geometry.State()
+
         // MARK: -
         // MARK: Public
         func deal() -> Effect<Action> {
             @Dependency(\.continuousClock) var clock
-            return .run(priority: .high) { send in
-                for (index, card) in toDeal.enumerated() {
+            return isSetsAvailable
+            ? .run { send in
+                let size = CGSize(width: 0, height: 30)
+                await send(
+                    .geometry(.updateGameControlOffset(size)),
+                    animation: .easeInOut(duration: 0.1)
+                )
+                
+                await send(
+                    .geometry(.updateCardRotationMultiplier(0.9)),
+                    animation: .easeInOut(duration: 0.2)
+                )
+                
+                try await clock.sleep(for: .milliseconds(0.1))
+                await send(
+                    .geometry(.updateGameControlOffset(.zero)),
+                    animation: .easeInOut(duration: 0.1)
+                )
+                
+                await send(
+                    .geometry(.updateCardRotationMultiplier(1)),
+                    animation: .easeInOut(duration: 0.2).delay(0.1)
+                )
+            }
+            : .run(priority: .high) { send in
+                for card in toDeal {
                     try await clock.sleep(for: .milliseconds(100))
                     await send(.card(id: card.id, action: .deal), animation: .default)
                 }
@@ -76,23 +101,26 @@ struct Deck: Reducer {
     enum Action: Equatable {
         case deal
         case isSet
-        case showHint
         case card(id: Card.State.ID, action: Card.Action)
+        case geometry(Geometry.Action)
     }
     
     var body: some ReducerOf<Self> {
+        Scope(state: \.geometry, action: /Action.geometry) {
+            Geometry()
+        }
+        
         Reduce { state, action in
             switch action {
             case .deal:
                 return state.deal()
-            
+                
             case .isSet:
                 return state.isSet
                 ? state.discard()
                 : state.deselectSelected()
                 
-            case .showHint:
-                
+            case .geometry(_):
                 return .none
                 
             case let .card(id: _, action: action) where action == .select:
@@ -124,6 +152,11 @@ extension Deck.State {
 }
 
 extension Deck.State {
+    var isSetsAvailable: Bool {
+        hints(quantity: .atLeast(1))
+            .first?.isEmpty == false
+    }
+    
     func hints(quantity: HintQuantity) -> [IdentifiedArrayOf<Card.State>] {
         return findHint(dealt, quantity: quantity)
     }
