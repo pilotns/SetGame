@@ -14,54 +14,58 @@ struct GameControlView: View {
     
     var body: some View {
         HStack {
-            ZStack {
-                WithViewStore(self.store, observe: \.discarded) { deck in
+            WithViewStore(self.store.actionless, observe: \.discarded) { deck in
+                ZStack {
                     ForEachStore(self.store.scope(state: \.discarded, action: Deck.Action.card(id:action:))) { card in
-                        WithViewStore(card.actionless, observe: \.id) { id in
-                            CardView(store: card)
-                                .matchedGeometryEffect(id: id.state, in: namespace)
-                                .transition(.identity.animation(.default))
-                                .rotationEffect(
-                                    rotationAngle(of: id.state, in: deck.state),
-                                    anchor: .bottomTrailing
-                                )
+                        WithViewStore(self.store.actionless, observe: \.geometry) { geometryStore in
+                            WithViewStore(card.actionless, observe: \.id) { id in
+                                CardView(store: card)
+                                    .matchedGeometryEffect(id: id.state, in: namespace)
+                                    .transition(.identity.animation(.default))
+                                    .rotationEffect(
+                                        .degrees(rotationAmount(for: id.state, in: deck.state) * geometryStore.cardRotationMultiplier),
+                                        anchor: .bottomTrailing
+                                    )
+                            }
                         }
                     }
                     .animation(.default, value: deck.state)
                 }
+                .frame(height: 150)
             }
             
             Spacer()
             
-            ZStack {
-                WithViewStore(self.store, observe: \.undealt) { deck in
+            WithViewStore(self.store, observe: \.undealt) { deck in
+                ZStack {
                     ForEachStore(self.store.scope(state: \.undealt, action: Deck.Action.card(id:action:))) { card in
                         WithViewStore(card.actionless, observe: \.id) { id in
                             let index = index(of: id.state, in: deck.state)
-                            
-                            CardView(store: card)
-                                .matchedGeometryEffect(id: id.state, in: namespace)
-                                .transition(.identity.animation(.default))
-                                .rotationEffect(
-                                    rotationAngle(of: id.state, in: deck.state),
-                                    anchor: .bottomLeading)
-                                .zIndex(Double(-index))
-                                .animation(nil, value: id.state)
-                                .onTapGesture {
-                                    deck.send(.deal, animation: .default)
-                                }
+                            WithViewStore(self.store, observe: \.geometry) { geometryStore in
+                                CardView(store: card)
+                                    .matchedGeometryEffect(id: id.state, in: namespace)
+                                    .transition(.identity.animation(.default))
+                                    .rotationEffect(
+                                        .degrees(rotationAmount(for: id.state, in: deck.state) * geometryStore.cardRotationMultiplier),
+                                        anchor: .bottomLeading)
+                                    .zIndex(Double(-index))
+                                    .animation(nil, value: id.state)
+                                    .onTapGesture {
+                                        deck.send(.deal, animation: .default)
+                                    }
+                            }
                         }
                     }
                     .animation(.default, value: deck.state)
                 }
+                .frame(height: 150)
             }
         }
-        .background(.ultraThinMaterial)
     }
     
-    private func rotationAngle(of cardId: UUID, in deck: IdentifiedArrayOf<Card.State>) -> Angle {
+    private func rotationAmount(for cardId: UUID, in deck: IdentifiedArrayOf<Card.State>) -> Double {
         let offset = 3.0
-        let slicedCards = 12
+        let slicedCards = 8
         
         let card = deck.first { $0.id == cardId }
         let index = index(of: cardId, in: deck)
@@ -71,18 +75,18 @@ struct GameControlView: View {
             switch state {
             case .undealt:
                 return index < slicedCards
-                ? .degrees(-Double(slicedCards - index) * offset)
-                : .degrees(0)
+                ? -Double(min(slicedCards, deck.count - 1) - index) * offset
+                : .zero
                 
             case .discarded:
                 return index < slicedCards
-                ? .degrees(Double(index) * offset)
-                : .degrees(Double(slicedCards) * offset)
+                ? Double(index) * offset
+                : Double(slicedCards) * offset
                 
-            default: return .degrees(0)
+            default: return .zero
             }
             
-        default: return .degrees(0)
+        default: return .zero
         }
     }
     

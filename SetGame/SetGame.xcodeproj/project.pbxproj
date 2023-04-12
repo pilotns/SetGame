@@ -28,6 +28,8 @@
 		8A605DC229E06C0D00149E62 /* CardAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A605DC129E06C0D00149E62 /* CardAppearance.swift */; };
 		8A605DC429E06D0F00149E62 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A605DC329E06D0F00149E62 /* CardView.swift */; };
 		8A605DC629E06E7B00149E62 /* GameControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A605DC529E06E7B00149E62 /* GameControlView.swift */; };
+		8AE8F3DC29E453A200EFBB86 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE8F3DB29E453A200EFBB86 /* Constants.swift */; };
+		8AE8F3DE29E55AFB00EFBB86 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE8F3DD29E55AFB00EFBB86 /* Geometry.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +73,8 @@
 		8A605DC129E06C0D00149E62 /* CardAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardAppearance.swift; sourceTree = "<group>"; };
 		8A605DC329E06D0F00149E62 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		8A605DC529E06E7B00149E62 /* GameControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControlView.swift; sourceTree = "<group>"; };
+		8AE8F3DB29E453A200EFBB86 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		8AE8F3DD29E55AFB00EFBB86 /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +177,8 @@
 				8A5ED07A29E01C7B009AB497 /* Deck.swift */,
 				8A5ED07C29E01D6F009AB497 /* Card.swift */,
 				8A5ED07E29E02299009AB497 /* Face.swift */,
+				8AE8F3DD29E55AFB00EFBB86 /* Geometry.swift */,
+				8AE8F3DB29E453A200EFBB86 /* Constants.swift */,
 			);
 			path = Deck;
 			sourceTree = "<group>";
@@ -180,8 +186,8 @@
 		8A5ED08429E06754009AB497 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				8A5ED08C29E06951009AB497 /* Card */,
 				8A5ED08529E067B7009AB497 /* Shapes */,
+				8A5ED08C29E06951009AB497 /* Card */,
 				8A5ED04B29E0193B009AB497 /* SetGameDeskView.swift */,
 				8A605DC529E06E7B00149E62 /* GameControlView.swift */,
 			);
@@ -349,6 +355,8 @@
 				8A5ED09029E069F6009AB497 /* CardFaceView.swift in Sources */,
 				8A605DC629E06E7B00149E62 /* GameControlView.swift in Sources */,
 				8A5ED04C29E0193B009AB497 /* SetGameDeskView.swift in Sources */,
+				8AE8F3DE29E55AFB00EFBB86 /* Geometry.swift in Sources */,
+				8AE8F3DC29E453A200EFBB86 /* Constants.swift in Sources */,
 				8A5ED08B29E0692D009AB497 /* StripedBackground.swift in Sources */,
 				8A605DC229E06C0D00149E62 /* CardAppearance.swift in Sources */,
 				8A5ED07D29E01D6F009AB497 /* Card.swift in Sources */,
