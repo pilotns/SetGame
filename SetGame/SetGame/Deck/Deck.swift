@@ -170,7 +170,7 @@ extension Deck.State {
 
 extension Deck.State {
     var hint: IdentifiedArrayOf<Card.State> {
-        findHint(dealt, quantity: .atLeast(1)).first ?? []
+        hints(.atLeast(1)).first ?? []
     }
     
     var isSetsAvailable: Bool {
@@ -180,6 +180,10 @@ extension Deck.State {
     enum HintQuantity {
         case all
         case atLeast(_ quantity: UInt)
+    }
+    
+    func hints(_ quantity: HintQuantity) -> [IdentifiedArrayOf<Card.State>] {
+        findHint(dealt, quantity: quantity)
     }
     
     private func findHint(_ cards: IdentifiedArrayOf<Card.State>, quantity: HintQuantity) -> [IdentifiedArrayOf<Card.State>] {
