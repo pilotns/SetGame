@@ -9,7 +9,7 @@ import Foundation
 
 enum Constants {
     enum GameControl {
-        static var height: CGFloat { 150 }
+        static var height: CGFloat { 120 }
         static var offset: CGSize { .zero }
         static var rotationMultiplier: CGFloat { 1 }
     }

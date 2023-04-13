@@ -15,9 +15,9 @@ struct SetGameDeskView: View {
     
     var body: some View {
         ZStack {
-            ScrollView {
-                WithViewStore(self.store, observe: \.dealt) { deck in
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 70))]) {
+            WithViewStore(self.store, observe: \.dealt) { deck in
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 75))]) {
                         ForEachStore(self.store.scope(state: \.dealt, action: Deck.Action.card(id:action:))) { card in
                             WithViewStore(card, observe: \.id) { id in
                                 CardView(store: card)
@@ -31,6 +31,9 @@ struct SetGameDeskView: View {
                     }
                     .animation(.default, value: deck.state)
                     .padding(.horizontal)
+                }
+                .onLongPressGesture {
+                    deck.send(.showHint)
                 }
             }
         }
@@ -65,26 +68,20 @@ struct SetGameDeskView: View {
     private func dragGesture(_ geometryStore: ViewStore<Geometry.State, Deck.Action>) -> some Gesture {
         DragGesture(minimumDistance: 0, coordinateSpace: .global)
             .onChanged { value in
-                let translationAmount = value.translation.height - previousTranslation.height
-                let newHeight: CGFloat
+                let amount = value.translation.height - previousTranslation.height
+                geometryStore.send(
+                    .geometry(
+                        .beganDragGesture(
+                            translationAmount: amount
+                        )
+                    )
+                )
                 
-                let currentHeight = geometryStore.state.gameControlHeight
-                
-                if currentHeight - translationAmount < Constants.GameControl.height {
-                    newHeight = currentHeight - translationAmount * 0.2
-                } else {
-                    newHeight = currentHeight - translationAmount
-                }
-                
-                geometryStore.send(.geometry(.updateGameControlHeight(newHeight)))
                 previousTranslation = value.translation
             }
             .onEnded { value in
                 previousTranslation = .zero
-                let currentHeight = geometryStore.state.gameControlHeight
-                _ = currentHeight < Constants.GameControl.height
-                ? geometryStore.send(.geometry(.resetGameControlHeight))
-                : geometryStore.send(.geometry(.updateGameControlHeight(currentHeight)))
+                geometryStore.send(.geometry(.endDragGesture))
             }
     }
 }
