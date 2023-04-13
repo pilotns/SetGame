@@ -31,7 +31,7 @@ struct GameControlView: View {
                     }
                     .animation(.default, value: deck.state)
                 }
-                .frame(height: 150)
+                .frame(height: 120)
             }
             
             Spacer()
@@ -58,7 +58,7 @@ struct GameControlView: View {
                     }
                     .animation(.default, value: deck.state)
                 }
-                .frame(height: 150)
+                .frame(height: 120)
             }
         }
     }

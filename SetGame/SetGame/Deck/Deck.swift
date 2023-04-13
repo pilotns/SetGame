@@ -71,6 +71,19 @@ struct Deck: Reducer {
             )
         }
         
+        func showHint() -> Effect<Action> {
+            @Dependency(\.continuousClock) var clock
+            return .concatenate(
+                hint.map { card in
+                        .run { send in
+                            await send(.card(id: card.id, action: .select))
+                            try await clock.sleep(for: .milliseconds(100))
+                            await send(.card(id: card.id, action: .select))
+                        }
+                }
+            )
+        }
+        
         var isSet: Bool {
             isSet(of: selected)
         }
@@ -101,6 +114,7 @@ struct Deck: Reducer {
     enum Action: Equatable {
         case deal
         case isSet
+        case showHint
         case card(id: Card.State.ID, action: Card.Action)
         case geometry(Geometry.Action)
     }
@@ -119,6 +133,9 @@ struct Deck: Reducer {
                 return state.isSet
                 ? state.discard()
                 : state.deselectSelected()
+                
+            case .showHint:
+                return state.showHint()
                 
             case .geometry(_):
                 return .none
@@ -152,13 +169,12 @@ extension Deck.State {
 }
 
 extension Deck.State {
-    var isSetsAvailable: Bool {
-        hints(quantity: .atLeast(1))
-            .first?.isEmpty == false
+    var hint: IdentifiedArrayOf<Card.State> {
+        findHint(dealt, quantity: .atLeast(1)).first ?? []
     }
     
-    func hints(quantity: HintQuantity) -> [IdentifiedArrayOf<Card.State>] {
-        return findHint(dealt, quantity: quantity)
+    var isSetsAvailable: Bool {
+        !hint.isEmpty
     }
     
     enum HintQuantity {
