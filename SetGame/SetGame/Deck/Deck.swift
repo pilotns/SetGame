@@ -14,41 +14,15 @@ struct Deck: Reducer {
         // MARK: Properties
         var cards: IdentifiedArrayOf<Card.State> = Self.cards
         var geometry = Geometry.State()
+        var statistic = Statistic.State()
+        var settings = Settings.State()
 
         // MARK: -
         // MARK: Public
         func deal() -> Effect<Action> {
-            @Dependency(\.continuousClock) var clock
             return isSetsAvailable
-            ? .run { send in
-                let size = CGSize(width: 0, height: 30)
-                await send(
-                    .geometry(.updateGameControlOffset(size)),
-                    animation: .easeInOut(duration: 0.1)
-                )
-                
-                await send(
-                    .geometry(.updateCardRotationMultiplier(0.9)),
-                    animation: .easeInOut(duration: 0.2)
-                )
-                
-                try await clock.sleep(for: .milliseconds(0.1))
-                await send(
-                    .geometry(.updateGameControlOffset(.zero)),
-                    animation: .easeInOut(duration: 0.1)
-                )
-                
-                await send(
-                    .geometry(.updateCardRotationMultiplier(1)),
-                    animation: .easeInOut(duration: 0.2).delay(0.1)
-                )
-            }
-            : .run(priority: .high) { send in
-                for card in toDeal {
-                    try await clock.sleep(for: .milliseconds(100))
-                    await send(.card(id: card.id, action: .deal), animation: .default)
-                }
-            }
+            ? .send(.geometry(.shake))
+            : dealingEffect
         }
         
         func discard() -> Effect<Action> {
@@ -73,7 +47,8 @@ struct Deck: Reducer {
         
         func showHint() -> Effect<Action> {
             @Dependency(\.continuousClock) var clock
-            return .concatenate(
+            return settings.isShowHint
+            ? .concatenate(
                 hint.map { card in
                         .run { send in
                             await send(.card(id: card.id, action: .select))
@@ -82,6 +57,7 @@ struct Deck: Reducer {
                         }
                 }
             )
+            : .none
         }
         
         var isSet: Bool {
@@ -109,19 +85,45 @@ struct Deck: Reducer {
             
             return result
         }
+        
+        private var dealingEffect: Effect<Action> {
+            @Dependency(\.continuousClock) var clock
+            let deal: Effect<Action> = .run(priority: .high) { [cards = toDeal] send in
+                for card in cards {
+                    try await clock.sleep(for: .milliseconds(100))
+                    await send(.card(id: card.id, action: .deal), animation: .default)
+                }
+            }
+            
+            return dealt.isEmpty && discarded.isEmpty
+            ? .merge(.send(.statistic(.begin)), deal)
+            : deal
+        }
     }
     
     enum Action: Equatable {
         case deal
         case isSet
         case showHint
+        case gameOver
+        case newGame
         case card(id: Card.State.ID, action: Card.Action)
         case geometry(Geometry.Action)
+        case statistic(Statistic.Action)
+        case settings(Settings.Action)
     }
     
     var body: some ReducerOf<Self> {
         Scope(state: \.geometry, action: /Action.geometry) {
             Geometry()
+        }
+        
+        Scope(state: \.statistic, action: /Action.statistic) {
+            Statistic()
+        }
+        
+        Scope(state: \.settings, action: /Action.settings) {
+            Settings()
         }
         
         Reduce { state, action in
@@ -131,11 +133,28 @@ struct Deck: Reducer {
                 
             case .isSet:
                 return state.isSet
-                ? state.discard()
+                ? .merge(.send(.statistic(.foundSet)), state.discard())
                 : state.deselectSelected()
                 
             case .showHint:
                 return state.showHint()
+                
+            case .gameOver:
+                // TODO: Slide up GameControlView
+                return .send(.statistic(.end))
+                
+            case .newGame:
+                let cards = state.cards.filter { $0.state != .undealt }
+                
+                return .merge(
+                    // TODO: Slide down GameControlView
+                    .send(.statistic(.reset)),
+                    .run { send in
+                        for card in cards {
+                            await send(.card(id: card.id, action: .reset))
+                        }
+                    }
+                )
                 
             case .geometry(_):
                 return .none
@@ -144,11 +163,19 @@ struct Deck: Reducer {
                 return state.selected.count == 3
                 ? .send(.isSet)
                 : .none
-            
-            case let .card(id: _, action: action) where action == .discard:
-                return state.discard()
                 
             case .card:
+                return .none
+                
+            case let .statistic(action) where action == .tick:
+                return state.undealt.isEmpty && !state.isSetsAvailable
+                ? .send(.gameOver)
+                : .none
+                
+            case .statistic:
+                return .none
+                
+            case .settings:
                 return .none
             }
         }
