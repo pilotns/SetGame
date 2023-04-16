@@ -55,8 +55,8 @@ struct CardBackView: View {
             
             Group {
                 ZStack {
+                    shape.foregroundColor(.white)
                     strockedShape
-                        .background(.white)
                     
                     let fontSize = min(size.width, size.height) * 0.25
                     Text(character)

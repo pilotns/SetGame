@@ -13,53 +13,80 @@ struct GameControlView: View {
     let namespace: Namespace.ID
     
     var body: some View {
-        HStack {
-            WithViewStore(self.store.actionless, observe: \.discarded) { deck in
-                ZStack {
-                    ForEachStore(self.store.scope(state: \.discarded, action: Deck.Action.card(id:action:))) { card in
-                        WithViewStore(self.store.actionless, observe: \.geometry) { geometryStore in
-                            WithViewStore(card.actionless, observe: \.id) { id in
-                                CardView(store: card)
-                                    .matchedGeometryEffect(id: id.state, in: namespace)
-                                    .transition(.identity.animation(.default))
-                                    .rotationEffect(
-                                        .degrees(rotationAmount(for: id.state, in: deck.state) * geometryStore.cardRotationMultiplier),
-                                        anchor: .bottomTrailing
-                                    )
-                            }
-                        }
+        VStack(spacing: 0) {
+            ZStack(alignment: .bottom) {
+                HStack {
+                    DeckView(
+                        store: self.store,
+                        type: .discardPile,
+                        namespace: namespace
+                    )
+                    
+                    Spacer()
+                    
+                    DeckView(
+                        store: self.store,
+                        type: .deck,
+                        namespace: namespace
+                    )
+                    .onTapGesture {
+                        ViewStore(
+                            self.store.stateless
+                        )
+                        .send(.deal)
                     }
-                    .animation(.default, value: deck.state)
                 }
                 .frame(height: 120)
             }
             
-            Spacer()
-            
-            WithViewStore(self.store, observe: \.undealt) { deck in
-                ZStack {
-                    ForEachStore(self.store.scope(state: \.undealt, action: Deck.Action.card(id:action:))) { card in
-                        WithViewStore(card.actionless, observe: \.id) { id in
-                            let index = index(of: id.state, in: deck.state)
-                            WithViewStore(self.store, observe: \.geometry) { geometryStore in
-                                CardView(store: card)
-                                    .matchedGeometryEffect(id: id.state, in: namespace)
-                                    .transition(.identity.animation(.default))
-                                    .rotationEffect(
-                                        .degrees(rotationAmount(for: id.state, in: deck.state) * geometryStore.cardRotationMultiplier),
-                                        anchor: .bottomLeading)
-                                    .zIndex(Double(-index))
-                                    .animation(nil, value: id.state)
-                                    .onTapGesture {
-                                        deck.send(.deal, animation: .default)
-                                    }
+            Form {
+                Group {
+                    WithViewStore(self.store, observe: \.statistic.currentGame) { game in
+                        Section("Game statistic") {
+                            if game.state.secondsElapsed == 0 {
+                                Text("Deal cards to start game..")
+                            } else {
+                                LabeledContent("Time elapsed:", value: game.timeElapsed)
+                                LabeledContent("Sets found:", value: game.foundSets, format: .number)
                             }
                         }
                     }
-                    .animation(.default, value: deck.state)
+                    
+                    WithViewStore(self.store, observe: \.statistic.bestGame) { game in
+                        Section("Best game") {
+                            if game.state.secondsElapsed == 0 {
+                                Text("No records found about previous games.")
+                            } else {
+                                LabeledContent("Time elapsed:", value: game.timeElapsed)
+                                LabeledContent("Sets found:", value: game.foundSets, format: .number)
+                            }
+                        }
+                    }
                 }
-                .frame(height: 120)
+                .environment(\.locale, .init(identifier: "en_US"))
+                
+                WithViewStore(self.store, observe: \.settings) { settings in
+                    Section {
+                        Toggle("Show hints?", isOn: settings.binding(
+                            get: { $0.isShowHint },
+                            send: .settings(.showHintToggle)
+                            )
+                        )
+                    } header: {
+                        Text("Settings")
+                    } footer: {
+                        Text("You can ask for a hint by long pressing on the game table.")
+                    }
+                }
+                
+                Section {
+                    Button("New game") {
+                        ViewStore(self.store.stateless).send(.newGame)
+                    }
+                }
             }
+            .scrollDisabled(true)
+            .scrollContentBackground(.hidden)
         }
     }
     
@@ -107,10 +134,11 @@ fileprivate extension Card.State {
 }
 
 struct GameControlView_Previews: PreviewProvider {
-    @Namespace static var n
+    @Namespace static var namespace
     static var previews: some View {
         GameControlView(
             store: Store(initialState: Deck.State(), reducer: Deck()),
-            namespace: n)
+            namespace: namespace
+        )
     }
 }
