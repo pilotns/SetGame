@@ -38,6 +38,7 @@ struct Card: Reducer {
         case deal
         case select
         case discard
+        case reset
     }
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
@@ -54,6 +55,13 @@ struct Card: Reducer {
             state.state = .discarded
             
             return .none
+            
+        case .reset:
+            state.state = .undealt
+            
+            return state.isSelected
+            ? .send(.select)
+            : .none
         }
     }
 }

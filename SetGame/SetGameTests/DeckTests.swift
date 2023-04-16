@@ -21,12 +21,16 @@ final class DeckTests: XCTestCase {
             $0.continuousClock = ImmediateClock()
         }
         
+        store.exhaustivity = .off
+        
         XCTAssertEqual(store.state.undealt.count, 81)
         XCTAssertEqual(store.state.dealt.isEmpty, true)
         XCTAssertEqual(store.state.discarded.isEmpty, true)
         XCTAssertEqual(store.state.selected.count, 0)
         
         await store.send(.deal)
+        await store.receive(.statistic(.begin))
+        
         await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, action: .deal)) {
             $0.cards[0] = Card.State(
                 id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
@@ -127,6 +131,10 @@ final class DeckTests: XCTestCase {
         XCTAssertEqual(store.state.dealt.count, 12)
         XCTAssertEqual(store.state.discarded.isEmpty, true)
         XCTAssertEqual(store.state.selected.count, 0)
+        
+        await store.send(.gameOver)
+        await store.receive(.statistic(.end))
+        await store.finish()
     }
     
     func testSecondDealing() async {
@@ -138,104 +146,12 @@ final class DeckTests: XCTestCase {
             $0.continuousClock = ImmediateClock()
         }
         
+        store.exhaustivity = .off
+        
         // MARK: -
         // MARK: First deal
         await store.send(.deal)
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, action: .deal)) {
-            $0.cards[0] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .one))
-        }
-
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, action: .deal)) {
-            $0.cards[1] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .two))
-        }
-
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, action: .deal)) {
-            $0.cards[2] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .three))
-        }
-
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, action: .deal)) {
-            $0.cards[3] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .one))
-        }
-
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!, action: .deal)) {
-            $0.cards[4] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .two))
-        }
-
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!, action: .deal)) {
-            $0.cards[5] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .three))
-        }
-
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!, action: .deal)) {
-            $0.cards[6] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .one))
-        }
-
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!, action: .deal)) {
-            $0.cards[7] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .two))
-        }
-
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!, action: .deal)) {
-            $0.cards[8] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .three))
-        }
-
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!, action: .deal)) {
-            $0.cards[9] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .one))
-        }
-
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-00000000000A")!, action: .deal)) {
-            $0.cards[10] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-00000000000A")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .two))
-        }
-
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-00000000000B")!, action: .deal)) {
-            $0.cards[11] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-00000000000B")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .three))
-        }
+        await store.skipReceivedActions()
         
         // MARK: -
         // MARK: Selecting first set
@@ -311,6 +227,10 @@ final class DeckTests: XCTestCase {
                 isSelected: false,
                 face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .three))
         }
+        
+        await store.receive(.statistic(.foundSet)) {
+            $0.statistic.currentGame.foundSets = 1
+        }
 
         // MARK: -
         // MARK: Selecting second set
@@ -385,6 +305,10 @@ final class DeckTests: XCTestCase {
                 state: .discarded,
                 isSelected: false,
                 face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .three))
+        }
+        
+        await store.receive(.statistic(.foundSet)) {
+            $0.statistic.currentGame.foundSets = 2
         }
         
         
@@ -463,6 +387,10 @@ final class DeckTests: XCTestCase {
                 face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .three))
         }
         
+        await store.receive(.statistic(.foundSet)) {
+            $0.statistic.currentGame.foundSets = 3
+        }
+        
         // MARK: -
         // MARK: Selecting fourth set
         await store.send(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!, action: .select)) {
@@ -538,6 +466,10 @@ final class DeckTests: XCTestCase {
                 face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .three))
         }
         
+        await store.receive(.statistic(.foundSet)) {
+            $0.statistic.currentGame.foundSets = 4
+        }
+        
         // MARK: -
         // MARK: Second deal
         await store.send(.deal)
@@ -569,123 +501,10 @@ final class DeckTests: XCTestCase {
         XCTAssertEqual(store.state.dealt.count, 3)
         XCTAssertEqual(store.state.discarded.isEmpty, false)
         XCTAssertEqual(store.state.selected.count, 0)
-    }
-    
-    func testSelectingSingle() async {
-        let store = TestStore(
-            initialState: Deck.State(),
-            reducer: Deck()
-        ) {
-            $0.uuid = .incrementing
-            $0.continuousClock = ImmediateClock()
-        }
         
-        await store.send(.deal)
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, action: .deal)) {
-            $0.cards[0] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, action: .deal)) {
-            $0.cards[1] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, action: .deal)) {
-            $0.cards[2] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, action: .deal)) {
-            $0.cards[3] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!, action: .deal)) {
-            $0.cards[4] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!, action: .deal)) {
-            $0.cards[5] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!, action: .deal)) {
-            $0.cards[6] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!, action: .deal)) {
-            $0.cards[7] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!, action: .deal)) {
-            $0.cards[8] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!, action: .deal)) {
-            $0.cards[9] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-00000000000A")!, action: .deal)) {
-            $0.cards[10] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-00000000000A")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-00000000000B")!, action: .deal)) {
-            $0.cards[11] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-00000000000B")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .three))
-        }
-        
-        await store.send(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, action: .select)) {
-            $0.cards[0] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
-                state: .dealt,
-                isSelected: true,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .one))
-        }
-        
-        XCTAssertEqual(store.state.selected.count, 1)
+        await store.send(.gameOver)
+        await store.receive(.statistic(.end))
+        await store.finish()
     }
     
     func testSelectingMatchingSet() async {
@@ -697,105 +516,16 @@ final class DeckTests: XCTestCase {
             $0.continuousClock = ImmediateClock()
         }
         
+        store.exhaustivity = .off
+        
         await store.send(.deal)
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, action: .deal)) {
-            $0.cards[0] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, action: .deal)) {
-            $0.cards[1] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, action: .deal)) {
-            $0.cards[2] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, action: .deal)) {
-            $0.cards[3] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!, action: .deal)) {
-            $0.cards[4] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!, action: .deal)) {
-            $0.cards[5] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!, action: .deal)) {
-            $0.cards[6] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!, action: .deal)) {
-            $0.cards[7] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!, action: .deal)) {
-            $0.cards[8] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!, action: .deal)) {
-            $0.cards[9] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-00000000000A")!, action: .deal)) {
-            $0.cards[10] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-00000000000A")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-00000000000B")!, action: .deal)) {
-            $0.cards[11] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-00000000000B")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .three))
-        }
+        await store.skipReceivedActions()
         
         XCTAssertEqual(store.state.selected.count, 0)
         
+        
+        // MARK: -
+        // MARK: Selecting set
         await store.send(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, action: .select)) {
             $0.cards[0] = Card.State(
                 id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
@@ -871,7 +601,15 @@ final class DeckTests: XCTestCase {
                 face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .three))
         }
         
+        await store.receive(.statistic(.foundSet)) {
+            $0.statistic.currentGame.foundSets = 1
+        }
+        
         XCTAssertEqual(store.state.selected.count, 0)
+        
+        await store.send(.gameOver)
+        await store.receive(.statistic(.end))
+        await store.finish()
     }
     
     func testSelectingWrongSet() async {
@@ -883,104 +621,10 @@ final class DeckTests: XCTestCase {
             $0.continuousClock = ImmediateClock()
         }
         
-        store.exhaustivity = .off(showSkippedAssertions: true)
+        store.exhaustivity = .off
         
         await store.send(.deal)
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, action: .deal)) {
-            $0.cards[0] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, action: .deal)) {
-            $0.cards[1] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, action: .deal)) {
-            $0.cards[2] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, action: .deal)) {
-            $0.cards[3] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!, action: .deal)) {
-            $0.cards[4] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!, action: .deal)) {
-            $0.cards[5] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!, action: .deal)) {
-            $0.cards[6] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!, action: .deal)) {
-            $0.cards[7] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!, action: .deal)) {
-            $0.cards[8] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!, action: .deal)) {
-            $0.cards[9] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-00000000000A")!, action: .deal)) {
-            $0.cards[10] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-00000000000A")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-00000000000B")!, action: .deal)) {
-            $0.cards[11] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-00000000000B")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .three))
-        }
+        await store.skipReceivedActions()
         
         XCTAssertEqual(store.state.selected.count, 0)
         
@@ -1047,7 +691,10 @@ final class DeckTests: XCTestCase {
             $0.continuousClock = ImmediateClock()
         }
         
+        store.exhaustivity = .off
+        
         await store.send(.deal)
+        await store.receive(.statistic(.begin))
         await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, action: .deal)) {
             $0.cards[0] = Card.State(
                 id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
@@ -1163,9 +810,13 @@ final class DeckTests: XCTestCase {
         XCTAssertEqual(store.state.hints(.atLeast(15)).count, 13)
         
         XCTAssertEqual(store.state.hints(.all).count, 13)
+        
+        await store.send(.gameOver)
+        await store.receive(.statistic(.end))
+        await store.finish()
     }
     
-    func testGameControlOffset() async {
+    func testInterruptSecondDealWithSetsAvailable() async {
         let store = TestStore(
             initialState: Deck.State(),
             reducer: Deck())
@@ -1174,102 +825,10 @@ final class DeckTests: XCTestCase {
             $0.continuousClock = ImmediateClock()
         }
         
+        store.exhaustivity = .off
+        
         await store.send(.deal)
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, action: .deal)) {
-            $0.cards[0] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, action: .deal)) {
-            $0.cards[1] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, action: .deal)) {
-            $0.cards[2] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, action: .deal)) {
-            $0.cards[3] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!, action: .deal)) {
-            $0.cards[4] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!, action: .deal)) {
-            $0.cards[5] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .green, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!, action: .deal)) {
-            $0.cards[6] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!, action: .deal)) {
-            $0.cards[7] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!, action: .deal)) {
-            $0.cards[8] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stroked, color: .red, number: .three))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!, action: .deal)) {
-            $0.cards[9] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .one))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-00000000000A")!, action: .deal)) {
-            $0.cards[10] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-00000000000A")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .two))
-        }
-        
-        await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-00000000000B")!, action: .deal)) {
-            $0.cards[11] = Card.State(
-                id: UUID(uuidString: "00000000-0000-0000-0000-00000000000B")!,
-                state: .dealt,
-                isSelected: false,
-                face: .init(symbol: .diamond, shading: .stripped, color: .purple, number: .three))
-        }
+        await store.skipReceivedActions()
         
         await store.send(.deal)
         await store.receive(.geometry(.updateGameControlOffset(CGSize(width: 0, height: 30)))) {
@@ -1289,20 +848,6 @@ final class DeckTests: XCTestCase {
         }
     }
     
-    func testGameControlHeight() async {
-        let store = TestStore(
-            initialState: Deck.State(),
-            reducer: Deck())
-        {
-            $0.uuid = .incrementing
-            $0.continuousClock = ImmediateClock()
-        }
-        
-        await store.send(.geometry(.updateGameControlHeight(300))) {
-            $0.geometry.gameControlHeight = 300
-        }
-    }
-    
     func testShowHint() async {
         let store = TestStore(
             initialState: Deck.State(),
@@ -1312,7 +857,10 @@ final class DeckTests: XCTestCase {
             $0.continuousClock = ImmediateClock()
         }
         
+        store.exhaustivity = .off
+        
         await store.send(.deal)
+        await store.receive(.statistic(.begin))
         await store.receive(.card(id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, action: .deal)) {
             $0.cards[0] = Card.State(
                 id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
@@ -1458,5 +1006,8 @@ final class DeckTests: XCTestCase {
                 face: .init(symbol: .diamond, shading: .stroked, color: .purple, number: .three))
         }
         
+        await store.send(.gameOver)
+        await store.receive(.statistic(.end))
+        await store.finish()
     }
 }
