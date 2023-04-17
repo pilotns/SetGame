@@ -9,14 +9,14 @@ import SwiftUI
 import ComposableArchitecture
 
 struct DeckView: View {
-    let store: StoreOf<Deck>
+    let store: StoreOf<Game>
     let type: `Type`
     let namespace: Namespace.ID
     
     var body: some View {
         WithViewStore(self.store.actionless, observe: keyPath) { deck in
             ZStack {
-                ForEachStore(self.store.scope(state: keyPath, action: Deck.Action.card(id:action:))) { card in
+                ForEachStore(self.store.scope(state: keyPath, action: { .deck(.card(id: $0.0, action: $0.1)) })) { card in
                     WithViewStore(self.store.actionless, observe: \.geometry) { geometryStore in
                         WithViewStore(card.actionless, observe: \.id) { id in
                             CardView(store: card)
@@ -35,10 +35,10 @@ struct DeckView: View {
         }
     }
     
-    private var keyPath: (Deck.State) -> IdentifiedArrayOf<Card.State> {
+    private var keyPath: (Game.State) -> IdentifiedArrayOf<Card.State> {
         switch type {
-        case .deck: return \.undealt
-        case .discardPile: return \.discarded
+        case .deck: return \.deck.undealt
+        case .discardPile: return \.deck.discarded
         }
     }
     
@@ -99,8 +99,8 @@ struct DeckView_Previews: PreviewProvider {
     static var previews: some View {
         DeckView(
             store: Store(
-                initialState: Deck.State(),
-                reducer: Deck()),
+                initialState: Game.State(),
+                reducer: Game()),
             type: .deck,
             namespace: namespace)
     }

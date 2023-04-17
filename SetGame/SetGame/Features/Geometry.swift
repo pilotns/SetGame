@@ -11,6 +11,8 @@ import ComposableArchitecture
 struct Geometry: Reducer {
     @Dependency(\.continuousClock) private var clock
     
+    // MARK: -
+    // MARK: State
     struct State: Equatable {
         var gameControlHeight: CGFloat = Constants.GameControl.height
         var gameControlOffset: CGSize = Constants.GameControl.offset
@@ -30,6 +32,8 @@ struct Geometry: Reducer {
         }
     }
     
+    // MARK: -
+    // MARK: Action
     enum Action: Equatable {
         case shake
         case resetGameControlHeight
@@ -40,6 +44,8 @@ struct Geometry: Reducer {
         case updateCardRotationMultiplier(CGFloat)
     }
     
+    // MARK: -
+    // MARK: Reducer
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
