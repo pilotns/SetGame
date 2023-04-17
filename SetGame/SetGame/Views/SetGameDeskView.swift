@@ -9,16 +9,16 @@ import SwiftUI
 import ComposableArchitecture
 
 struct SetGameDeskView: View {
-    let store: StoreOf<Deck>
+    let store: StoreOf<Game>
     
     @Namespace private var dealing
     
     var body: some View {
         ZStack {
-            WithViewStore(self.store, observe: \.dealt) { deck in
+            WithViewStore(self.store, observe: \.deck.dealt) { deck in
                 ScrollView {
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 75))]) {
-                        ForEachStore(self.store.scope(state: \.dealt, action: Deck.Action.card(id:action:))) { card in
+                        ForEachStore(self.store.scope(state: \.deck.dealt, action: { .deck(.card(id: $0.0, action: $0.1)) })) { card in
                             WithViewStore(card, observe: \.id) { id in
                                 CardView(store: card)
                                     .matchedGeometryEffect(id: id.state, in: dealing)
@@ -65,7 +65,7 @@ struct SetGameDeskView: View {
     
     @State private var previousTranslation: CGSize = .zero
     
-    private func dragGesture(_ geometryStore: ViewStore<Geometry.State, Deck.Action>) -> some Gesture {
+    private func dragGesture(_ geometryStore: ViewStore<Geometry.State, Game.Action>) -> some Gesture {
         DragGesture(minimumDistance: 0, coordinateSpace: .global)
             .onChanged { value in
                 let amount = value.translation.height - previousTranslation.height
@@ -90,8 +90,8 @@ struct SetGameDeskView_Previews: PreviewProvider {
     static var previews: some View {
         SetGameDeskView(
             store: Store(
-                initialState: Deck.State(),
-                reducer: Deck()
+                initialState: Game.State(),
+                reducer: Game()
             )
         )
     }

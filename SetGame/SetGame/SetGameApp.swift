@@ -14,8 +14,8 @@ struct SetGameApp: App {
         WindowGroup {
             SetGameDeskView(
                 store: Store(
-                    initialState: Deck.State(),
-                    reducer: Deck()
+                    initialState: Game.State(),
+                    reducer: Game()
                 )
             )
         }

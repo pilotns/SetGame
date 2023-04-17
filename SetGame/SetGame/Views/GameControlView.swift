@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct GameControlView: View {
-    let store: StoreOf<Deck>
+    let store: StoreOf<Game>
     let namespace: Namespace.ID
     
     var body: some View {
@@ -33,7 +33,7 @@ struct GameControlView: View {
                         ViewStore(
                             self.store.stateless
                         )
-                        .send(.deal)
+                        .send(.canDeal)
                     }
                 }
                 .frame(height: 120)
@@ -45,9 +45,12 @@ struct GameControlView: View {
                         Section("Game statistic") {
                             if game.state.secondsElapsed == 0 {
                                 Text("Deal cards to start game..")
+                                    .foregroundColor(.secondary)
+                                    .italic()
                             } else {
                                 LabeledContent("Time elapsed:", value: game.timeElapsed)
                                 LabeledContent("Sets found:", value: game.foundSets, format: .number)
+                                LabeledContent("Used hints:", value: "\(game.usedHints)")
                             }
                         }
                     }
@@ -56,9 +59,12 @@ struct GameControlView: View {
                         Section("Best game") {
                             if game.state.secondsElapsed == 0 {
                                 Text("No records found about previous games.")
+                                    .foregroundColor(.secondary)
+                                    .italic()
                             } else {
                                 LabeledContent("Time elapsed:", value: game.timeElapsed)
                                 LabeledContent("Sets found:", value: game.foundSets, format: .number)
+                                LabeledContent("Used hints:", value: "\(game.usedHints)")
                             }
                         }
                     }
@@ -137,7 +143,10 @@ struct GameControlView_Previews: PreviewProvider {
     @Namespace static var namespace
     static var previews: some View {
         GameControlView(
-            store: Store(initialState: Deck.State(), reducer: Deck()),
+            store: Store(
+                initialState: Game.State(),
+                reducer: Game()
+            ),
             namespace: namespace
         )
     }
