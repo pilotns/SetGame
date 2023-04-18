@@ -34,6 +34,7 @@
 		8A72663B29EC04DB005FC874 /* StatisticTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A72663A29EC04DB005FC874 /* StatisticTests.swift */; };
 		8A72663D29EC0830005FC874 /* SettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A72663C29EC0830005FC874 /* SettingsTests.swift */; };
 		8A854ABE29EDA2AA002FACAD /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A854ABD29EDA2AA002FACAD /* Game.swift */; };
+		8A854AC029EEA7D1002FACAD /* GameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A854ABF29EEA7D1002FACAD /* GameTests.swift */; };
 		8AE8F3DC29E453A200EFBB86 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE8F3DB29E453A200EFBB86 /* Constants.swift */; };
 		8AE8F3DE29E55AFB00EFBB86 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE8F3DD29E55AFB00EFBB86 /* Geometry.swift */; };
 /* End PBXBuildFile section */
@@ -85,6 +86,7 @@
 		8A72663A29EC04DB005FC874 /* StatisticTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticTests.swift; sourceTree = "<group>"; };
 		8A72663C29EC0830005FC874 /* SettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTests.swift; sourceTree = "<group>"; };
 		8A854ABD29EDA2AA002FACAD /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
+		8A854ABF29EEA7D1002FACAD /* GameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTests.swift; sourceTree = "<group>"; };
 		8AE8F3DB29E453A200EFBB86 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		8AE8F3DD29E55AFB00EFBB86 /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -159,6 +161,7 @@
 		8A5ED05929E0193C009AB497 /* SetGameTests */ = {
 			isa = PBXGroup;
 			children = (
+				8A854ABF29EEA7D1002FACAD /* GameTests.swift */,
 				8A5ED05A29E0193C009AB497 /* DeckTests.swift */,
 				8A5ED08229E06418009AB497 /* CardTests.swift */,
 				8A72663829EBF183005FC874 /* GeometryTests.swift */,
@@ -395,6 +398,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A5ED05B29E0193C009AB497 /* DeckTests.swift in Sources */,
+				8A854AC029EEA7D1002FACAD /* GameTests.swift in Sources */,
 				8A72663929EBF183005FC874 /* GeometryTests.swift in Sources */,
 				8A72663B29EC04DB005FC874 /* StatisticTests.swift in Sources */,
 				8A72663D29EC0830005FC874 /* SettingsTests.swift in Sources */,

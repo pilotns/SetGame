@@ -18,6 +18,7 @@ final class StatisticTests: XCTestCase {
             reducer: Statistic()
         ) {
             $0.continuousClock = ImmediateClock()
+            $0.dataManager = .testValue
         }
         
         store.exhaustivity = .off
@@ -36,9 +37,7 @@ final class StatisticTests: XCTestCase {
             $0.currentGame.secondsElapsed = 4
         }
         
-        await store.send(.end) {
-            $0.bestGame = $0.currentGame
-        }
+        await store.send(.end)
     }
     
     func testFoundSet() async {
@@ -47,9 +46,10 @@ final class StatisticTests: XCTestCase {
             reducer: Statistic()
         ) {
             $0.continuousClock = ImmediateClock()
+            $0.dataManager = .testValue
         }
         
-        await store.send(.foundSet) {
+        await store.send(.setFound) {
             $0.currentGame.foundSets = 1
         }
     }
@@ -60,22 +60,23 @@ final class StatisticTests: XCTestCase {
             reducer: Statistic()
         ) {
             $0.continuousClock = ImmediateClock()
+            $0.dataManager = .testValue
         }
         
         store.exhaustivity = .off
         
         await store.send(.begin)
         
-        await store.send(.foundSet) {
+        await store.send(.setFound) {
             $0.currentGame.foundSets = 1
         }
         
-        await store.send(.foundSet) {
+        await store.send(.setFound) {
             $0.currentGame.foundSets = 2
         }
         
         await store.send(.reset) {
-            $0.currentGame = Statistic.GameStatistic()
+            $0.currentGame = Statistic.State.GameStatistic()
         }
     }
 }
