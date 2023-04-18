@@ -70,7 +70,7 @@ struct Statistic: Reducer {
             
             func isBetter(then game: GameStatistic) -> Bool {
                 self.secondsElapsed <= game.secondsElapsed
-                    && self.foundSets <= game.foundSets
+                    && self.foundSets >= game.foundSets
                     && self.usedHints <= game.usedHints
                     || (self.secondsElapsed > 0 && game.secondsElapsed == 0)
             }
@@ -131,7 +131,7 @@ struct Statistic: Reducer {
             case .reset:
                 state.currentGame = State.GameStatistic()
                 
-                return .send(.end)
+                return .none
                 
             case .setFound:
                 state.currentGame.foundSets += 1
