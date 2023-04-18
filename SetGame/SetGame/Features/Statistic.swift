@@ -8,6 +8,31 @@
 import Foundation
 import ComposableArchitecture
 
+struct DataManager: Sendable {
+    var save: @Sendable (Data, URL) throws -> Void
+    var load: @Sendable (URL) throws -> Data
+}
+
+extension DataManager: DependencyKey {
+    static let liveValue = Self(
+        save: { data, url in try data.write(to: url) },
+        load: { url in try Data(contentsOf: url) }
+    )
+}
+
+extension DependencyValues {
+    var dataManager: DataManager {
+        get { self[DataManager.self] }
+        set { self[DataManager.self] = newValue }
+    }
+}
+
+fileprivate extension URL {
+    static var statistic: URL {
+        URL.documentsDirectory.appending(path: "statistin.json")
+    }
+}
+
 struct Statistic: Reducer {
     @Dependency(\.continuousClock) private var clock
     
@@ -15,12 +40,50 @@ struct Statistic: Reducer {
     // MARK: State
     struct State: Equatable {
         var currentGame = GameStatistic()
-        var bestGame = GameStatistic()
+        var bestGame = GameStatistic(url: .statistic) {
+            didSet {
+                bestGame.save()
+            }
+        }
         
-        struct GameStatistic: Equatable {
-            var secondsElapsed: UInt = 0
-            var foundSets: UInt = 0
-            var usedHints: UInt = 0
+        struct GameStatistic: Equatable, Codable {
+            var secondsElapsed: UInt
+            var foundSets: UInt
+            var usedHints: UInt
+            
+            init() {
+                self.secondsElapsed = 0
+                self.foundSets = 0
+                self.usedHints = 0
+            }
+            
+            init(url: URL) {
+                @Dependency(\.dataManager) var dataManager
+                
+                do {
+                    let data = try dataManager.load(url)
+                    self = try JSONDecoder().decode(Self.self, from: data)
+                } catch {
+                    self = GameStatistic()
+                }
+            }
+            
+            func isBetter(then game: GameStatistic) -> Bool {
+                self.secondsElapsed <= game.secondsElapsed
+                    && self.foundSets >= game.foundSets
+                    && self.usedHints <= game.usedHints
+                    || (self.secondsElapsed > 0 && game.secondsElapsed == 0)
+            }
+            
+            func save() {
+                @Dependency(\.dataManager) var dataManager
+                do {
+                    let data = try JSONEncoder().encode(self)
+                    try dataManager.save(data, .statistic)
+                } catch {
+                    print(error)
+                }
+            }
         }
     }
     
@@ -54,10 +117,8 @@ struct Statistic: Reducer {
             case .end:
                 let currentGame = state.currentGame
                 let bestGame = state.bestGame
-                if bestGame.secondsElapsed > currentGame.secondsElapsed
-                    && bestGame.foundSets < currentGame.foundSets
-                    || (bestGame.secondsElapsed == 0 && currentGame.secondsElapsed > 0)
-                {
+                
+                if currentGame.isBetter(then: bestGame) {
                     state.bestGame = currentGame
                 }
 
@@ -70,7 +131,7 @@ struct Statistic: Reducer {
             case .reset:
                 state.currentGame = State.GameStatistic()
                 
-                return .send(.end)
+                return .none
                 
             case .setFound:
                 state.currentGame.foundSets += 1
