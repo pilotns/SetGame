@@ -14,85 +14,30 @@ struct GameControlView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            ZStack(alignment: .bottom) {
-                HStack {
-                    DeckView(
-                        store: self.store,
-                        type: .discardPile,
-                        namespace: namespace
+            HStack {
+                DeckView(
+                    store: self.store,
+                    type: .discardPile,
+                    namespace: namespace
+                )
+                
+                Spacer()
+                
+                DeckView(
+                    store: self.store,
+                    type: .deck,
+                    namespace: namespace
+                )
+                .onTapGesture {
+                    ViewStore(
+                        self.store.stateless
                     )
-                    
-                    Spacer()
-                    
-                    DeckView(
-                        store: self.store,
-                        type: .deck,
-                        namespace: namespace
-                    )
-                    .onTapGesture {
-                        ViewStore(
-                            self.store.stateless
-                        )
-                        .send(.canDeal)
-                    }
+                    .send(.canDeal)
                 }
-                .frame(height: 120)
             }
+            .frame(height: 120)
             
-            Form {
-                Group {
-                    WithViewStore(self.store, observe: \.statistic.currentGame) { game in
-                        Section("Game statistic") {
-                            if game.state.secondsElapsed == 0 {
-                                Text("Deal cards to start game..")
-                                    .foregroundColor(.secondary)
-                                    .italic()
-                            } else {
-                                LabeledContent("Time elapsed:", value: game.timeElapsed)
-                                LabeledContent("Sets found:", value: game.foundSets, format: .number)
-                                LabeledContent("Used hints:", value: "\(game.usedHints)")
-                            }
-                        }
-                    }
-                    
-                    WithViewStore(self.store, observe: \.statistic.bestGame) { game in
-                        Section("Best game") {
-                            if game.state.secondsElapsed == 0 {
-                                Text("No records found about previous games.")
-                                    .foregroundColor(.secondary)
-                                    .italic()
-                            } else {
-                                LabeledContent("Time elapsed:", value: game.timeElapsed)
-                                LabeledContent("Sets found:", value: game.foundSets, format: .number)
-                                LabeledContent("Used hints:", value: "\(game.usedHints)")
-                            }
-                        }
-                    }
-                }
-                .environment(\.locale, .init(identifier: "en_US"))
-                
-                WithViewStore(self.store, observe: \.settings) { settings in
-                    Section {
-                        Toggle("Show hints?", isOn: settings.binding(
-                            get: { $0.isShowHint },
-                            send: .settings(.showHintToggle)
-                            )
-                        )
-                    } header: {
-                        Text("Settings")
-                    } footer: {
-                        Text("You can ask for a hint by long pressing on the game table.")
-                    }
-                }
-                
-                Section {
-                    Button("New game") {
-                        ViewStore(self.store.stateless).send(.newGame)
-                    }
-                }
-            }
-            .scrollDisabled(true)
-            .scrollContentBackground(.hidden)
+            StatisticView(store: self.store)
         }
     }
     
