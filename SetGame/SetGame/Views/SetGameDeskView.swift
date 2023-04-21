@@ -81,7 +81,7 @@ struct SetGameDeskView: View {
             }
             .onEnded { value in
                 previousTranslation = .zero
-                geometryStore.send(.geometry(.endDragGesture))
+                geometryStore.send(.geometry(.endDragGesture), animation: .default)
             }
     }
 }

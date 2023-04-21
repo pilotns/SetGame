@@ -34,6 +34,8 @@ struct Deck: Reducer {
         case deal
         case discard
         case deselect
+        case shuffle
+        case reset
         case card(id: Card.State.ID, action: Card.Action)
     }
     
@@ -69,6 +71,36 @@ struct Deck: Reducer {
                         .send(.card(id: $0.id, action: .select), animation: .easeInOut)
                     }
                 )
+                
+            case .shuffle:
+                state.cards.shuffle()
+                
+                return .none
+                
+            case .reset:
+                let dealt = state.dealt
+                let discarded = state.discarded
+                let cards = dealt.isEmpty ? discarded : dealt
+                
+                return .run { send in
+                    for card in cards {
+                        if !dealt.isEmpty {
+                            try await clock.sleep(for: .milliseconds(100))
+                        }
+                        
+                        await send(
+                            dealt.isEmpty
+                                ? .card(id: card.id, action: .reset)
+                                : .card(id: card.id, action: .discard)
+                        )
+                    }
+                    
+                    if !dealt.isEmpty {
+                        await send(.shuffle)
+                        try await clock.sleep(for: .milliseconds(800))
+                        await send(.reset)
+                    }
+                }
                 
             case .card:
                 return .none

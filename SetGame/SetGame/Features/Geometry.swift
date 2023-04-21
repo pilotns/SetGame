@@ -14,7 +14,13 @@ struct Geometry: Reducer {
     // MARK: -
     // MARK: State
     struct State: Equatable {
-        var gameControlHeight: CGFloat = Constants.GameControl.height
+        enum GameControlState: CGFloat {
+            case deck = 120
+            case statistic = 600
+        }
+        
+        var viewState: GameControlState = .deck
+        var gameControlHeight: CGFloat = GameControlState.deck.rawValue
         var gameControlOffset: CGSize = Constants.GameControl.offset
         var cardRotationMultiplier: CGFloat = Constants.GameControl.rotationMultiplier
         
@@ -22,7 +28,9 @@ struct Geometry: Reducer {
             let newHeight: CGFloat
             let currentHeight = gameControlHeight
             
-            if currentHeight - translationAmount < Constants.GameControl.height {
+            if currentHeight - translationAmount < GameControlState.deck.rawValue {
+                newHeight = currentHeight - translationAmount * 0.2
+            } else if currentHeight - translationAmount > GameControlState.statistic.rawValue {
                 newHeight = currentHeight - translationAmount * 0.2
             } else {
                 newHeight = currentHeight - translationAmount
@@ -40,6 +48,7 @@ struct Geometry: Reducer {
         case beganDragGesture(translationAmount: CGFloat)
         case endDragGesture
         case updateGameControlHeight(CGFloat)
+        case updateViewState(State.GameControlState)
         case updateGameControlOffset(CGSize)
         case updateCardRotationMultiplier(CGFloat)
     }
@@ -66,9 +75,9 @@ struct Geometry: Reducer {
                         animation: .easeInOut(duration: 0.2).delay(0.1))
                 }
             case .resetGameControlHeight:
-                return .run { send in
+                return .run { [height = state.viewState.rawValue] send in
                     await send(.updateCardRotationMultiplier(0.9))
-                    await send(.updateGameControlHeight(Constants.GameControl.height))
+                    await send(.updateGameControlHeight(height))
                     await send(.updateCardRotationMultiplier(Constants.GameControl.rotationMultiplier),
                                animation: .easeIn(duration: 0.1))
                 }
@@ -78,14 +87,20 @@ struct Geometry: Reducer {
                 return .send(.updateGameControlHeight(newHeight))
                 
             case .endDragGesture:
-                return state.gameControlHeight < Constants.GameControl.height
+                return state.gameControlHeight < State.GameControlState.deck.rawValue
+                || state.gameControlHeight > State.GameControlState.statistic.rawValue
                 ? .send(.resetGameControlHeight)
-                : .none
+                : .send(.updateViewState(state.viewState == .deck ? .statistic : .deck))
                 
             case let .updateGameControlHeight(height):
                 state.gameControlHeight = height
                 
                 return .none
+                
+            case let .updateViewState(newState):
+                state.viewState = newState
+                return .send(.updateGameControlHeight(newState.rawValue))
+                
             case let .updateGameControlOffset(size):
                 state.gameControlOffset = size
                 
