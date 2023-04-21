@@ -18,6 +18,7 @@ struct Game: Reducer {
         var geometry = Geometry.State()
         var statistic = Statistic.State()
         var settings = Settings.State()
+        var page = Page.State()
     }
     
     // MARK: -
@@ -32,6 +33,7 @@ struct Game: Reducer {
         case geometry(Geometry.Action)
         case statistic(Statistic.Action)
         case settings(Settings.Action)
+        case page(Page.Action)
     }
     
     // MARK: -
@@ -53,14 +55,31 @@ struct Game: Reducer {
             Settings()
         }
         
+        Scope(state: \.page, action: /Action.page) {
+            Page()
+        }
+        
         Reduce { state, action in
             switch action {
             case .newGame:
-                state.deck = Deck.State()
-                return .send(.statistic(.reset))
+                return .run { send in
+                    await send(
+                        .geometry(
+                            .updateViewState(.deck)
+                        ), animation: .easeInOut
+                    )
+                    
+                    try await clock.sleep(for: .milliseconds(500))
+                    await send(.statistic(.reset))
+                    await send(.deck(.reset))
+                }
                 
             case .gameOver:
-                return .send(.statistic(.end))
+                return .run { send in
+                    await send(.statistic(.end))
+                    try await clock.sleep(for: .milliseconds(800))
+                    await send(.geometry(.updateViewState(.statistic)), animation: .easeInOut)
+                }
                 
             case .canDeal:
                 let deck = state.deck
@@ -117,6 +136,9 @@ struct Game: Reducer {
                 return .none
             case .settings:
                 return .none
+            case .page:
+                return .none
+                
             }
         }
     }
