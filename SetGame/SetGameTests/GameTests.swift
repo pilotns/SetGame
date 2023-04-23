@@ -127,6 +127,7 @@ final class GameTests: XCTestCase {
         
         await store.receive(.gameOver)
         await store.receive(.statistic(.end))
+        await store.receive(.geometry(.updateViewState(.statistic)))
     }
     
     func testNewGame() async {
@@ -151,38 +152,8 @@ final class GameTests: XCTestCase {
         }
         
         await store.send(.newGame)
+        await store.receive(.geometry(.updateViewState(.deck)))
         await store.receive(.statistic(.reset))
+        await store.receive(.deck(.reset))
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
