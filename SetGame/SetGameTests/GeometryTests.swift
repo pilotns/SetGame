@@ -12,6 +12,30 @@ import ComposableArchitecture
 @MainActor
 final class GeometryTests: XCTestCase {
     
+    func testUpdateViewState() async {
+        let store = TestStore(
+            initialState: Geometry.State(),
+            reducer: Geometry()
+        ) {
+            $0.continuousClock = ImmediateClock()
+        }
+        
+        let deck = Geometry.State.GameControlState.deck
+        let statistic = Geometry.State.GameControlState.statistic
+        
+        XCTAssertEqual(store.state.viewState, .deck)
+        await store.send(.updateViewState(.statistic)) {
+            $0.viewState = .statistic
+        }
+        
+        await store.receive(.updateGameControlHeight(statistic.rawValue)) {
+            $0.gameControlHeight = statistic.rawValue
+        }
+        
+        XCTAssertEqual(store.state.viewState, statistic)
+        XCTAssertEqual(store.state.gameControlHeight, statistic.rawValue)
+    }
+    
     func testUpdateGameControlHeight() async {
         let store = TestStore(
             initialState: Geometry.State(),
@@ -155,7 +179,5 @@ final class GeometryTests: XCTestCase {
         await store.receive(.updateCardRotationMultiplier(Constants.GameControl.rotationMultiplier)) {
             $0.cardRotationMultiplier = Constants.GameControl.rotationMultiplier
         }
-        
-        
     }
 }

@@ -473,4 +473,3 @@ final class DeckTests: XCTestCase {
         XCTAssertEqual(store.state.selected.count, 0)
     }
 }
-
